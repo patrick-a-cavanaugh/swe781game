@@ -1,0 +1,4 @@
+I am going to do a turn-based, multiplayer (2-players in each "universe", although multiple simultaneous games may be
+supported) game where players move a piece (ship) between different locations (planets). At each location they can buy
+or sell one of several resources from a local marketplace. After a fixed number of moves are made by both parties to the
+game, it ends and the player with the greatest net worth is declared the victor by the server.

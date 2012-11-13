@@ -1,0 +1,56 @@
+<h2>Register User Account</h2>
+
+<p>If you already have a user account, please <a href="/">login instead</a>.</p>
+
+<form class="form-horizontal">
+    <div class="control-group <%-form.errorClass('emailAddress') %>">
+        <label class="control-label">Email address</label>
+
+        <div class="controls">
+            <input type="email" name="emailAddress" value="<%- form.get('emailAddress') %>" />
+            <%= form.error('emailAddress') %>
+        </div>
+    </div>
+    <div class="control-group <%- form.errorClass('userName') %>">
+        <label class="control-label">User name</label>
+
+        <div class="controls">
+            <input type="text" name="userName" value="<%- form.get('userName') %>" />
+            <%= form.error('userName') %>
+                <span class="help-block">
+                    Pick a username between 6 and 12 characters (alphabet, numbers, and underscores "_" only)
+                </span>
+        </div>
+    </div>
+    <div class="control-group <%- form.errorClass('password') %>">
+        <label class="control-label">Password</label>
+
+        <div class="controls">
+            <input type="password" name="password" value="<%- form.get('password') %>" />
+            <%= form.error('password') %>
+                <span class="help-block">
+                    Your password must be at least 8 characters and no more than 55 characters.
+
+                    The 370 most common passwords (compiled by Twitter)
+                    are also banned. We recommend generating and storing a secure password using a password manager like
+                        <a href="http://keepass.info/">KeePass</a>,
+                        <a href="https://agilebits.com/onepassword">1Password</a>,
+                        or <a href="https://lastpass.com/">LastPass</a> to keep your account secure.
+                </span>
+        </div>
+    </div>
+    <div class="control-group <%- form.errorClass(['passwordConfirmation', 'passwordConfirmationMatching']) %>">
+        <label class="control-label">Confirm Password</label>
+
+        <div class="controls">
+            <input type="password" name="passwordConfirmation" value="<%- form.get('passwordConfirmation') %>" />
+            <%= form.error('passwordConfirmationMatching') %>
+            <span class="help-block">Re-enter your password here.</span>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" value="Register me" />
+        </div>
+    </div>
+</form>

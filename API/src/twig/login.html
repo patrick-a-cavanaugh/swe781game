@@ -1,0 +1,18 @@
+<!--suppress HtmlUnknownTarget -->
+<form action="{{ path('login_check') }}" method="post" class="form-horizontal">
+    {{ error }}
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+    <div class="control-group">
+        <label class="control-label" for="_username">Username</label>
+        <div class="controls">
+            <input type="text" name="_username" id="_username" value="{{ last_username }}"/>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="_password">Password</label>
+        <div class="controls"><input type="password" name="_password" id="_password" value=""/></div>
+    </div>
+    <div class="control-group">
+        <div class="controls"><input type="submit" value="Login"/></div>
+    </div>
+</form>

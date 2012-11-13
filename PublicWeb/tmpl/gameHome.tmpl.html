@@ -1,0 +1,131 @@
+<h1>Game Home: <%- game.get('name') %> (<%- game.get('status') %>)</h1>
+
+<% if (game.get('winnerId') != null) { %>
+
+        <p>A winner has been chosen: <%- game.get('winnerName') %>. If you didn't win, better luck next time!</p>
+
+<% } else { %>
+
+<p>
+    The game is on turn <%- game.get('turn') + 1 %>. <% mayMove = false; if (game.get('turn') != player.get('lastCompletedTurn')) { mayMove = true; %> <strong>you can move now! Go right ahead.</strong> <% } %>
+</p>
+
+<div class="row-fluid">
+    <div class="span6">
+        <h2>Ship Status</h2>
+        <dl>
+            <dt>Fuel</dt>
+            <dd id="fuelStatusIndicator">
+                <%- player.get('fuel') %>
+            </dd>
+
+            <dt>Free Cargo Space</dt>
+            <dd id="freeCargoSpaceIndicator">
+                <%- player.get('freeCargoSpace') %>
+            </dd>
+
+            <dt>Cash Available</dt>
+            <dd><%- player.get('money') %> Galactic Credits</dd>
+
+            <dt>Cargo on board</dt>
+            <dd id="cargoOnBoardIndicator">
+                <% console.log("player cargo", player.toJSON()); %>
+                <% var cargoOnBoard = player.get('maxCargoSpace') - player.get('freeCargoSpace'); %>
+                <% if (cargoOnBoard > 0) { %>
+                    <u><%- cargoOnBoard %> total units of cargo on board</u>
+
+                    <% _.each(player.get('cargo'), function (cargo) { %>
+                    <p><strong><%- cargo.cargoSize %></strong> units of <%- cargo.name %></p>
+                    <% }); %>
+                <% } %>
+            </dd>
+        </dl>
+
+        <h2>Cargo</h2>
+
+        <h3>Local prices</h3>
+
+        <dl id="localPriceList">
+            <% _.each(currentPlanet.get('cargo'), function (cargoType) { %>
+            <dt><%- cargoType.name %></dt>
+            <dd>Buy: <%- cargoType.buyPrice %>, Sell: <%- cargoType.sellPrice %></dd>
+            <% }); %>
+        </dl>
+    </div>
+
+    <div class="span6">
+        <h2>Navigation</h2>
+
+        Current Location: <%- currentPlanet ? currentPlanet.get('name') : '' %>
+        <br />
+        Current Status: <span style="display: none"><%- player.get('locationStatus') %></span>
+        <% if (player.get('locationStatus') === 'LAND') { %>Landed<% } else { %>In Space<% } %>
+        <br />
+        <img src="<%- gameMapUrl %>" alt="The Game Map" />
+
+        <br />
+        <br />
+
+        <div class="form-inline">
+            <% if (mayMove) { %>
+                <% if (player.get('locationStatus') === 'LAND') { %>
+                    <button type="button" class="btn btnLiftoff">Lift off</button>
+                <% } else { %>
+                    <button type="button" class="btn btnLand">Land</button>
+                    <br />
+                    <label for="jumpSelect">Jump to system:</label>
+                    <select id="jumpSelect">
+                        <% if (currentPlanet) { %>
+                        <% _.each(currentPlanet.get('links'), function (link) { %>
+                        <option value="<%- link.connectedPlanetId %>"><%- link.connectedPlanetName %></option>
+                        <% }); %>
+                        <% } %>
+                    </select>
+                    <% var btnJumpDisabled = player.get('fuel') > 0 ? '' : 'btn-disabled'; %>
+                    <button type="button" <% if (btnJumpDisabled) { %> disabled <% } %> class="btn btn-primary <%- btnJumpDisabled %> btnJump">Jump</button>
+                <% } %>
+            <% } else { %>
+                You've already taken your turn. You need to wait for the other players.
+                Keep refreshing and when all other players have moved, you can move again too!
+            <% } %>
+        </div>
+
+        <h3>Commerce</h3>
+        <div class="form-inline">
+            <label for="cargoTypeIdSelect">Cargo Type:</label>
+            <%
+            var commerceOption = function (value, text, currentValue) {
+                var option = $("<option></option>").attr("value", value).text(text)
+                .attr("selected", value == currentValue);
+                return $("<div></div>").append(option).html();
+            }; %>
+            <select name="cargoTypeId" id="cargoTypeIdSelect">
+                <%= commerceOption(1, "Iron", commerceFormParams.cargoTypeIdSelect) %>
+                <%= commerceOption(2, "Platinum", commerceFormParams.cargoTypeIdSelect) %>
+                <%= commerceOption(3, "Unobtanium", commerceFormParams.cargoTypeIdSelect) %>
+                <%= commerceOption(4, "Rock Salt", commerceFormParams.cargoTypeIdSelect) %>
+            </select>
+
+            <br />
+            <label for="sizeInput">Size:</label>
+            <input type="number" name="size" value="<%- commerceFormParams.sizeInput || 0 %>" id="sizeInput"/>
+
+            <br />
+            <button type="button" class="btn" id="buyButton">Buy</button>
+            <button type="button" class="btn" id="sellButton">Sell</button>
+
+            <div id="formFeedback">
+                <% if (commerceErrors.length != 0) { %>
+                <ul>
+                    <% _.each(commerceErrors, function (errorMessage) { %>
+                        <li><%- errorMessage %></li>
+                    <% }); %>
+                </ul>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<% } /* end else */  %>

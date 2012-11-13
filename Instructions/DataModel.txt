@@ -1,0 +1,65 @@
+User
+- id
+- email address
+- password hash
+- user name / tag
+- date_registered
+
+UserPasswordResets
+- user_id
+- last_attempt_timestamp
+- unsuccessful_logins_count
+
+primary key (user_id)
+
+Game
+- id
+- date_created
+- status (waiting for players, in progress, completed)
+
+Player
+- user_id
+- game_id
+- date_entered
+- status (waiting for game, active in game, completed game, left game in progress)
+
+unique key (player_id, game_id)
+
+ShipType
+- id
+- cargo_space
+
+CargoType
+- id
+- name
+
+Planet
+- id
+- game_id
+
+PlanetLink
+- planet_id
+- connected_planet_id
+
+unique key (planet_id, connected_planet_id)
+
+PlanetCargo
+- planet_id
+- cargo_type_id
+- buy_price
+- sell_price
+
+PlayerShip
+- player_ship_id (PRIMARY KEY)
+- player_id
+- game_id
+- ship_type_id
+
+unique key (player_id, game_id)
+
+PlayerShipCargo
+- player_ship_id
+- cargo_type_id
+- cargo_size
+
+unique key (player_ship_id, cargo_type_id)

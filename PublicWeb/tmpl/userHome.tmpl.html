@@ -1,0 +1,55 @@
+<h1>User Home</h1>
+<div class="row-fluid">
+    <div class="span3">
+        <a class="btn btn-primary" href="#createGameModal" data-bypass="true" data-toggle="modal">Create new game</a>
+    </div>
+    <div class="span9">
+        <h2>All Games</h2>
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Status</th>
+                <th>Date created</th>
+                <th>Name</th>
+                <th>Actions</th>
+                <th>Winner</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% if (collection.length < 1) { %>
+                <tr>
+                    <td colspan="4">
+                        <em>No games yet… why not create one?</em>
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal hide fade" id="createGameModal">
+    <div class="modal-header">
+        <button type="button" class="close" data-bypass="true" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Create a new Game</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="gameName">
+                    Game Name
+                </label>
+
+                <div class="controls">
+                    <input type="text" name="name" id="gameName" />
+                    <span class="help-inline">3 to 64 characters, alphanumeric and spaces only</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-bypass="true" data-dismiss="modal">Cancel</a>
+        <a href="#" class="btn btn-primary" data-bypass="true" data-dismiss="modal" id="createGameBtn">Let's play!</a>
+    </div>
+</div>

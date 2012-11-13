@@ -1,0 +1,7 @@
+logs/*.log
+vendor/
+database/
+
+# Config files that contain passwords and should not be included in the repository
+config/dev.config.php
+*.passwords.config.php

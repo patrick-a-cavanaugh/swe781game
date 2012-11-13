@@ -1,0 +1,68 @@
+# Scratchpad #
+
+## Web service architecture ##
+
+Resource: User
+- A user account, including the credentials needed to authenticate a user to the system. Once
+  a user is authenticated, their user account determines their authorization (e.g. only a player
+  belonging to a user can be moved).
+
+POST /api/user/create
+POST /api/user/:userId/confirmEmail
+
+Resource: Game
+- Represents an ongoing game composed of 2 to 4 players. Games have a start time and continue
+  for 30 minutes after being started, allowing one turn every minute.
+
+GET /api/games (returns a list of all games. Optional parameter allows requesting only
+                games open to join)
+POST /api/games (also returns the Player resource which is automatically created for the
+                 player that begins the game.)
+
+Resource: Player
+- A user's avatar in the game. Has a ship, cargo, and can be moved about the universe each turn.
+- has a location determined by the set of PlayerMoves
+- has cargo attached to the current ship and player
+- has credits determined by buying and selling cargo
+
+POST /api/player/create (must include JSON id for the game. Can only create a player for a game that
+                 has not yet started)
+# Only accessible if the player was created by the current user.
+GET /api/player/:playerId (returns JSON formatted info about the player)
+
+Resource: ShipType
+- the ship type may not be used in this version of the game. There is one ship type by default
+- the ship type determines the cargo space available to the player
+
+GET /api/shipType/:shipTypeId (returns JSON formatted info about the ship type)
+
+Resource: Planet
+- a planet is a location in the game universe where a ship can be located.
+- cargo is bought and sold at planets
+- a planet is connected to 1 to N other planets by hyperlinks that a player can travel
+
+# All planets may be queried by the player at any time. This information is considered public.
+GET /api/planet/:planetId (returns JSON formatted list of info about planet.)
+
+Resource: PlanetCargo
+- information about the buying and selling price of a type of cargo at the planet
+
+# Only the planet which the player is currently located at is a valid :planetId
+GET /api/planet/:planetId/cargo (returns JSON formatted list of buy/sell prices at planet)
+
+Resource: PlayerMove
+- may be one of three types - Liftoff, Hyperjump, and Land.
+- a player may make 1 Liftoff each turn, and 1 Land move if there has already been a liftoff.
+- up to 4 Hyperjump moves may be made each turn. Each hyperjump moves the player to a planet
+  connected to the current planet by a hyperlink.
+
+# Liftoff or land
+POST /api/playerMoves/create (with parameter "player_move_type" "LIFTOFF" or "LAND")
+POST /api/playerMoves/create (with parameter "player_move_type" "HYPERJUMP" and parameter "player_move_destination_id" a valid planet id connected to the player's current location)
+
+Resource: PlayerCargoTransaction
+- player may make a buy or sell transaction for cargo, the price is determined by the player's
+  current planetary location
+- these transactions affect the Player's credit balance and cargo/free cargo space too.
+
+POST /api/playerCargoTransactions (with parameters "type" (BUY/SELL), "cargoTypeId", "size", and "playerId)

@@ -1,0 +1,25 @@
+<td><%- game.get('status') %></td>
+<td><%- game.get('dateCreated') %></td>
+<td><%- game.get('name') %></td>
+<td>
+    <% if (game.get('status') === 'WAITING') { %>
+    <% if (game.get('joined')) { %>
+    <!-- TODO: implement this -->
+    <!-- <a href="#" data-bypass="true" class="btn leaveGameBtn">Leave</a> -->
+    <% if (game.get('players') < 2) { %>
+    You cannot start the game until another player joins
+    <% } else { %>
+        <% if (game.createdByMe()) { %>
+            <a href="#" data-bypass="true" class="btn startGameBtn">Start Game</a>
+        <% } else { %>
+            Waiting for party leader to start…
+        <% } %>
+    <% } %>
+    <% } else { %>
+    <a href="#" data-bypass="true" class="btn joinGameBtn">Join</a>
+    <% } %>
+    <% } else if (game.get('status') === 'IN_PROGRESS' && game.get('joined')) { %>
+    <a href="/gameApp/game/<%- game.get('id') %>" class="btn playGameBtn">Play</a>
+    <% } %>
+</td>
+<td><%- game.get('winnerName') ? game.get('winnerName') : " " %></td>
