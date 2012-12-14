@@ -8,6 +8,7 @@ use Game\Model\PlayerShipType;
 use Game\Model\Player;
 use Game\Model\PlayerMove;
 use Monolog\Logger;
+use Game\Model\Game;
 
 /**
  * TODO: Document me!
@@ -223,6 +224,23 @@ SQL
 
 
     /**
+     * Fetch all the moves for a completed game.
+     * @param $gameId
+     * @return array
+     */
+    public function fetchAllMovesForGame($gameId) {
+        $sql = self::getSqlWhereForPlayerMove("g.id = :game_id AND g.status = :game_status", true);
+
+        $moves = $this->db->fetchAll($sql,
+            ['game_id' => intval($gameId),
+            'game_status' => Game::Status_Completed]);
+        foreach ($moves as &$move) {
+            $this->setMoveTypes($move);
+        }
+        return $moves;
+    }
+
+    /**
      * @param $playerId
      * @return array
      */
@@ -233,13 +251,17 @@ SQL
         $moves = $this->db->fetchAll($sql, ['user_id' => intval($this->currentUser->getId()),
             'player_id' => intval($playerId)]);
         foreach($moves as &$move) {
-            $move['id'] = intval($move['id']);
-            $move['player_id'] = intval($move['player_id']);
-            $move['game_turn_no'] = intval($move['game_turn_no']);
-            $move['move_no'] = intval($move['move_no']);
-            $move['player_move_destination_id'] = intval($move['player_move_destination_id']);
+            $this->setMoveTypes($move);
         }
         return $moves;
+    }
+
+    private function setMoveTypes(&$move) {
+        $move['id'] = intval($move['id']);
+        $move['player_id'] = intval($move['player_id']);
+        $move['game_turn_no'] = intval($move['game_turn_no']);
+        $move['move_no'] = intval($move['move_no']);
+        $move['player_move_destination_id'] = intval($move['player_move_destination_id']);
     }
 
     /**
@@ -260,6 +282,32 @@ SQL
             $move['player_move_destination_id'] = intval($move['player_move_destination_id']);
         }
         return $move ?: null;
+    }
+
+    /**
+     * Get the leaderboard, essentially. A list of all the users,
+     * with how many games they won or lost.
+     */
+    public function getPlayerRankings() {
+        $sql = <<<SQL
+SELECT u.id as user_id, u.username
+ , COUNT(gw.id) AS wins
+ , COUNT(gl.id) AS losses
+ , COUNT(gp.id) AS in_progress
+FROM `user` u
+LEFT OUTER JOIN player p ON p.user_id = u.id
+LEFT OUTER JOIN game gw ON p.game_id = gw.id AND gw.winner_id = p.id
+LEFT OUTER JOIN game gl ON p.game_id = gl.id AND gl.winner_id IS NOT NULL AND gl.winner_id != p.id
+LEFT OUTER JOIN game gp ON p.game_id = gp.id AND gp.winner_id IS NULL AND gp.status = 'IN_PROGRESS'
+GROUP BY u.id
+SQL;
+        $rankings = $this->db->fetchAll($sql);
+        foreach($rankings as &$ranking) {
+            $ranking['wins'] = intval($ranking['wins']);
+            $ranking['losses'] = intval($ranking['losses']);
+            $ranking['in_progress'] = intval($ranking['in_progress']);
+        }
+        return $rankings;
     }
 
     /**
@@ -289,17 +337,22 @@ SQL;
             ['player_id' => $playerId, 'game_turn_no' => $gameTurnNo, 'move_type' => PlayerMove::Type_Land]);
     }
 
-    private static function getSqlWhereForPlayerMove($whereCond = "1 = 1")
+    private static function getSqlWhereForPlayerMove($whereCond = "1 = 1", $insecure = false)
     {
         // check the player id so that a player cannot view another player's moves
         $sql = <<<SQL
 SELECT pm.id, pm.player_id, pm.game_turn_no, pm.move_no, pm.type, pm.player_move_destination_id
 FROM player_moves pm
 INNER JOIN player p ON p.id = pm.player_id
+INNER JOIN game g ON g.id = p.game_id
 WHERE p.user_id = :user_id
 AND 999 = 999
 SQL;
-        return str_replace("999 = 999", $whereCond, $sql);
+        $retSql = str_replace("999 = 999", $whereCond, $sql);
+        if ($insecure) {
+            $retSql = str_replace("p.user_id = :user_id", "1 = 1", $retSql);
+        }
+        return $retSql;
     }
 
 }

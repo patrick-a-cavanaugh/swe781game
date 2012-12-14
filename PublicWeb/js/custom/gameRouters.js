@@ -12,7 +12,8 @@ function (Backbone, $, gameApp, GameViews, GameModels) {
             "gameApp/login": "index",
             "gameApp/userHome": "userHome",
             "gameApp/logout": "logout",
-            "gameApp/game/:gameId": "gameHome"
+            "gameApp/game/:gameId": "gameHome",
+            "gameApp/statistics": "statistics"
         },
 
         initialize: function (options) {
@@ -72,6 +73,19 @@ function (Backbone, $, gameApp, GameViews, GameModels) {
             }
             this.appView.showView(new GameViews.GameHome({
                 model: game
+            }));
+        },
+
+        statistics: function () {
+
+            var statistics = new GameModels.StatisticsAggregate();
+
+            $.get(gameApp.gameApiBaseUrl + "/statistics", function (data) {
+                statistics.set(data);
+            }, "json");
+
+            this.appView.showView(new GameViews.StatisticsHome({
+                model: statistics
             }));
         }
     });

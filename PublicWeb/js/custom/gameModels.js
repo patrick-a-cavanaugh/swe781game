@@ -268,5 +268,18 @@ define(['backbone', 'jquery', 'custom/gameApp', 'humps'], function (Backbone, $,
         }
     });
 
+    GameModels.StatisticsAggregate = Backbone.Model.extend({
+
+        defaults: {
+            "playerRankings": null,
+            "gameMoves": null
+        },
+
+        parse: function (response) {
+            return humps.camelizeKeys(response);
+        }
+
+    });
+
     return GameModels;
 });

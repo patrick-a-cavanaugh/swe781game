@@ -522,4 +522,24 @@ $app->post("/playerCargoTransactions", function (Request $request, GameApp $app)
     }
 });
 
+$app->get('/statistics', function (GameApp $app) {
+    //- see the win/loss statistics of themselves and others
+    //- see game moves of completed games,
+
+    $statistics = [];
+
+    $statistics['playerRankings'] = $app['PlayerService']->getPlayerRankings();
+
+    $allGames = $app['GameService']->fetchAllGames();
+    $statistics['gameMoves'] = [];
+    foreach ($allGames as $game) {
+        if ($game['status'] === Game::Status_Completed) {
+            $statistics['gameMoves'][$game['id']]
+                = $app['PlayerService']->fetchAllMovesForGame($game['id']);
+        }
+    }
+
+    return $app->json($statistics);
+});
+
 return $app;

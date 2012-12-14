@@ -70,5 +70,9 @@ define('BASE_URL', 'https://www.securitygame.localdev');
     <?php require 'tmpl/gameHome.tmpl.html'; ?>
 </script>
 
+<script type="text/html" id="statisticsTmpl">
+    <?php require 'tmpl/statistics.tmpl.html'; ?>
+</script>
+
 </body>
 </html>

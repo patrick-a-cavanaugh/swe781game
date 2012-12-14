@@ -34,7 +34,22 @@ define(['backbone', 'jquery', 'custom/gameModels', 'humps'], function (Backbone,
             this.$el.html(this.template({
                 loginFormHtml: this.options.loginFormHtml
             }));
-            console.log("rendering LoginForm");
+        }
+    });
+
+    GameViews.StatisticsHome = Backbone.View.extend({
+        template: _.template($("#statisticsTmpl").html()),
+
+        initialize: function () {
+            this.model.on('change', this.render, this);
+        },
+
+        render: function () {
+            var json = this.model.toJSON();
+            this.$el.html(this.template({
+                playerRankings: json.playerRankings,
+                gameMoves: json.gameMoves
+            }));
         }
     });
 

@@ -1,0 +1,27 @@
+<% if (playerRankings) { %>
+<table border="2">
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>Wins</th>
+        <th>Losses</th>
+        <th>In Progress</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% _.each(playerRankings, function (ranking) { %>
+        <tr>
+            <td><%- ranking.username %> </td>
+            <td><%- ranking.wins %> </td>
+            <td><%- ranking.losses %> </td>
+            <td><%- ranking.in_progress %> </td>
+        </tr>
+    <% }); %>
+    </tbody>
+</table>
+<% } %>
+
+<% if (gameMoves) { %>
+    <p>Audit log of the game moves from all completed games:</p>
+    <textarea rows="10" cols="300"><%- JSON.stringify(gameMoves) %></textarea>
+<% } %>
